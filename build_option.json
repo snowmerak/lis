@@ -1,0 +1,18 @@
+{
+  "bin_path": "bin",
+  "bin_name": "sb",
+  "target": {
+    "darwin": [
+      "amd64"
+    ],
+    "linux": [
+      "amd64",
+      "386"
+    ],
+    "windows": [
+      "amd64",
+      "386"
+    ]
+  },
+  "gogc": 0
+}
