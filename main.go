@@ -20,12 +20,12 @@ func main() {
 		conf := &config{
 			BinPath: "bin",
 			BinName: *init,
-			Target:  map[string][]string{
+			Target: map[string][]string{
 				"windows": {"amd64", "386"},
-				"darwin": {"amd64", "arm64"},
-				"linux": {"amd64", "386", "arm64"},
+				"darwin":  {"amd64", "arm64"},
+				"linux":   {"amd64", "386", "arm64"},
 			},
-			GOGC:    150,
+			GOGC: 150,
 		}
 		if _, err := os.Stat(fileName); !os.IsNotExist(err) {
 			if err := os.Remove(fileName); err != nil {
@@ -51,7 +51,7 @@ func main() {
 		return
 	}
 	decoder := json.NewDecoder(f)
-	if err := decoder.Decode(conf); err != nil{
+	if err := decoder.Decode(conf); err != nil {
 		log.Fatal(err)
 	}
 	gogc := fmt.Sprintf("GOGC=%d", conf.GOGC)
@@ -66,7 +66,7 @@ func main() {
 			if _, err := cmd.Output(); err != nil {
 				log.Fatal(err)
 			}
-
+			fmt.Printf("compiled binary for %s %s\n", k, arch)
 		}
 	}
 }
