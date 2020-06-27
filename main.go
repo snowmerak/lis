@@ -8,10 +8,13 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 )
 
 func main() {
 	const fileName = "build_option.json"
+
+	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	init := flag.String("init", "", "init [project name]: to create build_option.json with project name")
 	flag.Parse()
@@ -20,12 +23,12 @@ func main() {
 		conf := &config{
 			BinPath: "bin",
 			BinName: *init,
-			Target:  map[string][]string{
+			Target: map[string][]string{
 				"windows": {"amd64", "386"},
-				"darwin": {"amd64", "arm64"},
-				"linux": {"amd64", "386", "arm64"},
+				"darwin":  {"amd64", "arm64"},
+				"linux":   {"amd64", "386", "arm64"},
 			},
-			GOGC:    150,
+			GOGC: 150,
 		}
 		if _, err := os.Stat(fileName); !os.IsNotExist(err) {
 			if err := os.Remove(fileName); err != nil {
@@ -51,22 +54,28 @@ func main() {
 		return
 	}
 	decoder := json.NewDecoder(f)
-	if err := decoder.Decode(conf); err != nil{
+	if err := decoder.Decode(conf); err != nil {
 		log.Fatal(err)
 	}
 	gogc := fmt.Sprintf("GOGC=%d", conf.GOGC)
 	if conf.GOGC == 0 {
 		gogc = "GOGC=off"
 	}
+	if _, err := os.Stat(conf.BinPath); os.IsNotExist(err) {
+		if _, err := os.Create(conf.BinPath); err != nil {
+			log.Fatal(err)
+		}
+	}
 	for k, archs := range conf.Target {
 		for _, arch := range archs {
-			cmd := exec.Command("env", gogc, fmt.Sprintf("GOOS=%s", k),
-				fmt.Sprintf("GOARCH=%s", arch), "go", "build", "-o",
-				filepath.Join(conf.BinPath, fmt.Sprintf("%s-%s-%s", conf.BinName, k, arch)))
-			if _, err := cmd.Output(); err != nil {
-				log.Fatal(err)
-			}
-
+			go func(gogc, arch, k string) {
+				cmd := exec.Command("env", gogc, fmt.Sprintf("GOOS=%s", k),
+					fmt.Sprintf("GOARCH=%s", arch), "go", "build", "-o",
+					filepath.Join(conf.BinPath, fmt.Sprintf("%s-%s-%s", conf.BinName, k, arch)))
+				if _, err := cmd.Output(); err != nil {
+					log.Fatal(err)
+				}
+			}(gogc, arch, k)
 		}
 	}
 }
