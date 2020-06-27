@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"sync"
 )
 
 func main() {
@@ -66,16 +67,25 @@ func main() {
 			log.Fatal(err)
 		}
 	}
+
+	wg := sync.WaitGroup{}
+
 	for k, archs := range conf.Target {
 		for _, arch := range archs {
-			go func(gogc, arch, k string) {
+			wg.Add(1)
+			go func(gogc, arch, k string, wg *sync.WaitGroup) {
+				fmt.Printf("start to compile for %s %s\n", k, arch)
 				cmd := exec.Command("env", gogc, fmt.Sprintf("GOOS=%s", k),
 					fmt.Sprintf("GOARCH=%s", arch), "go", "build", "-o",
 					filepath.Join(conf.BinPath, fmt.Sprintf("%s-%s-%s", conf.BinName, k, arch)))
 				if _, err := cmd.Output(); err != nil {
 					log.Fatal(err)
 				}
-			}(gogc, arch, k)
+				fmt.Printf("compiled for %s %s\n", k, arch)
+				wg.Done()
+			}(gogc, arch, k, &wg)
 		}
 	}
+
+	wg.Wait()
 }
