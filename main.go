@@ -63,7 +63,7 @@ func main() {
 		gogc = "GOGC=off"
 	}
 	if _, err := os.Stat(conf.BinPath); os.IsNotExist(err) {
-		if _, err := os.Create(conf.BinPath); err != nil {
+		if err := os.Mkdir(conf.BinPath, 0770); err != nil {
 			log.Fatal(err)
 		}
 	}
