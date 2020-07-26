@@ -1,6 +1,6 @@
 {
   "bin_path": "bin",
-  "bin_name": "sb",
+  "bin_name": "lisb",
   "target": {
     "darwin": [
       "amd64"
