@@ -20,18 +20,23 @@ func evalString(t []rune) string {
 	sb := strings.Builder{}
 	opend := 0
 	last := 0
+	t = t[1 : len(t)-1]
 	sb.WriteString("fmt.Sprint(")
 	for i := range t {
 		if opend == 0 && t[i] == '{' && (i == 0 || t[i-1] != '\\') {
-			sb.WriteString(string(t[last:i]))
-			sb.WriteString(", ")
+			if last != 0 {
+				sb.WriteString(fmt.Sprint("\"", string(t[last:i]), "\""))
+				sb.WriteString(", ")
+			}
 			opend = i + 1
 		} else if opend != 0 && t[i] == '}' {
 			sb.WriteString(string(t[opend:i]))
+			sb.WriteString(", ")
 			opend = 0
 			last = i + 1
 		}
 	}
+	sb.WriteString(fmt.Sprint("\"", string(t[last:len(t)]), "\""))
 	sb.WriteString(")")
 
 	return sb.String()
@@ -65,19 +70,19 @@ func translate(filename string) bool {
 	last := 0
 	var function func([]rune) string
 	for i := range runes {
-		if opend == 0 && runes[i] == '`' && runes[i-1] == '\\' {
+		if opend == 0 && runes[i] == '`' && runes[i-1] != '\\' {
 			if v, ok := interpreters[runes[i+1]]; ok {
 				function = v
-				fmt.Fprint(tf, string(runes[last:i]))
+				tf.WriteString(string(runes[last:i]))
 				opend = i + 1
 			}
-		} else if opend != 0 && runes[i-1] != '\\' && runes[i] == '`' {
-			fmt.Fprint(tf, function(runes[opend:i]))
+		} else if opend != 0 && runes[i] == '`' && runes[i-1] != '\\' {
+			tf.WriteString(function(runes[opend:i]))
 			opend = 0
 			last = i + 1
 		}
 	}
-	fmt.Fprint(tf, runes[last:len(runes)])
+	tf.WriteString(string(runes[last:len(runes)]))
 
 	if err := os.Rename(filename, strings.TrimSuffix(filename, ".go")); err != nil {
 		log.Fatal(err)

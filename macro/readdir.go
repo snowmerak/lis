@@ -32,7 +32,7 @@ func readdir(path string) []string {
 			rs = append(rs, readdir(filepath.Join(path, f.Name()))...)
 			continue
 		}
-		if strings.HasSuffix(filepath.Base(f.Name()), "-lib.go") {
+		if strings.HasSuffix(filepath.Base(f.Name()), "-lis.go") {
 			rs = append(rs, filepath.Join(path, f.Name()))
 		}
 	}

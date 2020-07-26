@@ -2,31 +2,43 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os/exec"
 	"path/filepath"
-	"sync"
 )
 
-func buildAll(conf *config, gogc string) {
-	wg := sync.WaitGroup{}
+func buildAll(conf *config, gogc string) error {
+	errChan := make(chan error)
+	max := 0
 
 	for k, archs := range conf.Target {
 		for _, arch := range archs {
-			wg.Add(1)
-			go func(gogc, arch, k string, wg *sync.WaitGroup) {
+			max++
+			go func(gogc, arch, k string) {
 				fmt.Printf("start to compile for %s %s\n", k, arch)
 				cmd := exec.Command("env", gogc, fmt.Sprintf("GOOS=%s", k),
 					fmt.Sprintf("GOARCH=%s", arch), "go", "build", "-o",
 					filepath.Join(conf.BinPath, fmt.Sprintf("%s-%s-%s", conf.BinName, k, arch)))
 				if _, err := cmd.Output(); err != nil {
-					log.Fatal(err)
+					errChan <- err
+				} else {
+					errChan <- nil
+					fmt.Printf("compiled for %s %s\n", k, arch)
 				}
-				fmt.Printf("compiled for %s %s\n", k, arch)
-				wg.Done()
-			}(gogc, arch, k, &wg)
+			}(gogc, arch, k)
 		}
 	}
 
-	wg.Wait()
+	num := 0
+	for err := range errChan {
+		num++
+		if err != nil {
+			close(errChan)
+			return err
+		}
+		if num == max {
+			close(errChan)
+			return nil
+		}
+	}
+	return nil
 }

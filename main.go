@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"lisb/macro"
 	"runtime"
 )
@@ -21,7 +22,9 @@ func main() {
 
 	files := macro.Run()
 
-	buildAll(load())
+	if err := buildAll(load()); err != nil {
+		fmt.Println(err)
+	}
 
 	macro.End(files)
 }
