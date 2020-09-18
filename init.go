@@ -15,7 +15,8 @@ func initoption(name string) {
 			"darwin":  {"amd64", "arm64"},
 			"linux":   {"amd64", "386", "arm64"},
 		},
-		GOGC: 150,
+		GOGC:     150,
+		IsPlugin: false,
 	}
 	if _, err := os.Stat(fileName); !os.IsNotExist(err) {
 		if err := os.Remove(fileName); err != nil {

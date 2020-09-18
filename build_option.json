@@ -14,5 +14,7 @@
       "386"
     ]
   },
-  "gogc": 0
+  "gogc": 0,
+  "is_plugin": false,
+  "will_run": false
 }
