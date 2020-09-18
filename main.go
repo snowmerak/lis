@@ -33,6 +33,7 @@ func main() {
 	macro.End(files)
 
 	if conf.WillRun {
+		fmt.Println("--- AutoRun ---")
 		cmd := exec.Command(fmt.Sprintf("./%s/%s-%s-%s", conf.BinPath, conf.BinName, runtime.GOOS, runtime.GOARCH))
 		cmd.Stdout = os.Stdout
 		cmd.Stdin = os.Stdin
