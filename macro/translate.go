@@ -2,9 +2,12 @@ package macro
 
 import (
 	"fmt"
+	"go/build"
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
 )
@@ -83,6 +86,13 @@ func translate(filename string) bool {
 		}
 	}
 	tf.WriteString(string(runes[last:len(runes)]))
+
+	goimports := exec.Command(filepath.Join(build.Default.GOPATH, "bin", "goimports"), tname)
+	if importsResult, err := goimports.Output(); err != nil {
+		fmt.Print(err)
+	} else {
+		ioutil.WriteFile(tname, importsResult, os.ModePerm)
+	}
 
 	if err := os.Rename(filename, strings.TrimSuffix(filename, ".go")); err != nil {
 		log.Fatal(err)

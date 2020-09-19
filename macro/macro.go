@@ -9,6 +9,7 @@ import (
 //Run ...
 func Run() []string {
 	files := readalldir()
+
 	for i, f := range files {
 		if !translate(f) {
 			if err := rollbackTranslated(files[:i+1]); err != nil {

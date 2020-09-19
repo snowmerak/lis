@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os/exec"
 	"path/filepath"
@@ -23,8 +24,8 @@ func buildAll(conf *config) error {
 					cmd.Args = append(cmd.Args, "-buildmode=plugin")
 				}
 				cmd.Args = append(cmd.Args, "-o", filepath.Join(conf.BinPath, fmt.Sprintf("%s-%s-%s", conf.BinName, k, arch)))
-				if _, err := cmd.Output(); err != nil {
-					errChan <- err
+				if o, err := cmd.Output(); err != nil {
+					errChan <- errors.New(fmt.Sprint(o, "\n", err.Error()))
 				} else {
 					errChan <- nil
 					fmt.Printf("compiled for %s %s\n", k, arch)
