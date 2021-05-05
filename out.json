@@ -1,0 +1,21 @@
+{
+  "bin_path": "bin",
+  "name": "lis",
+  "target": {
+    "darwin": [
+      "amd64"
+    ],
+    "linux": [
+      "amd64",
+      "386"
+    ],
+    "windows": [
+      "amd64",
+      "386"
+    ]
+  },
+  "gogc": 0,
+  "to_plugin": false,
+  "auto_run": false,
+  "module": true
+}
