@@ -2,9 +2,10 @@ package main
 
 type config struct {
 	BinPath  string              `json:"bin_path"`
-	BinName  string              `json:"bin_name"`
+	Name     string              `json:"name"`
 	Target   map[string][]string `json:"target"`
 	GOGC     int                 `json:"gogc"`
-	IsPlugin bool                `json:"is_plugin"`
-	WillRun  bool                `json:"will_run"`
+	ToPlugin bool                `json:"to_plugin"`
+	AutoRun  bool                `json:"auto_run"`
+	Module   bool                `json:"module"`
 }
