@@ -14,12 +14,16 @@ func buildAll(conf *config) error {
 	if conf.GOGC == 0 {
 		gogc = "GOGC=off"
 	}
+	mod := "GO111MODULE=on"
+	if !conf.Module {
+		mod = "GO111MODULE=off"
+	}
 	for k, archs := range conf.Target {
 		for _, arch := range archs {
 			max++
 			go func(gogc, arch, k string) {
 				fmt.Printf("start to compile for %s %s\n", k, arch)
-				cmd := exec.Command("env", gogc, fmt.Sprintf("GOOS=%s", k), fmt.Sprintf("GOARCH=%s", arch), "go", "build")
+				cmd := exec.Command("env", mod, gogc, fmt.Sprintf("GOOS=%s", k), fmt.Sprintf("GOARCH=%s", arch), "go", "build")
 				if conf.ToPlugin {
 					cmd.Args = append(cmd.Args, "-buildmode=plugin")
 				}
