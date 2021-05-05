@@ -20,10 +20,10 @@ func buildAll(conf *config) error {
 			go func(gogc, arch, k string) {
 				fmt.Printf("start to compile for %s %s\n", k, arch)
 				cmd := exec.Command("env", gogc, fmt.Sprintf("GOOS=%s", k), fmt.Sprintf("GOARCH=%s", arch), "go", "build")
-				if conf.IsPlugin {
+				if conf.ToPlugin {
 					cmd.Args = append(cmd.Args, "-buildmode=plugin")
 				}
-				cmd.Args = append(cmd.Args, "-o", filepath.Join(conf.BinPath, fmt.Sprintf("%s-%s-%s", conf.BinName, k, arch)))
+				cmd.Args = append(cmd.Args, "-o", filepath.Join(conf.BinPath, fmt.Sprintf("%s-%s-%s", conf.Name, k, arch)))
 				if o, err := cmd.Output(); err != nil {
 					errChan <- errors.New(fmt.Sprint(o, "\n", err.Error()))
 				} else {

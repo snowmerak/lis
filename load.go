@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func load() *config {
+func load(fileName string) *config {
 	conf := &config{}
 	f, err := os.Open(fileName)
 	if err != nil {
