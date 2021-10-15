@@ -1,11 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"os"
 
 	"github.com/AlecAivazis/survey/v2"
+	"gopkg.in/yaml.v2"
 )
 
 func initoption(fileName string) {
@@ -66,7 +66,11 @@ func initoption(fileName string) {
 			},
 		},
 	}
-	survey.Ask(qs, conf)
+	if err := survey.Ask(qs, conf); err != nil {
+		log.Fatal(err)
+	}
+	conf.GOGC *= 50
+	fileName += ".yaml"
 	if _, err := os.Stat(fileName); !os.IsNotExist(err) {
 		if err := os.Remove(fileName); err != nil {
 			log.Fatal(err)
@@ -76,8 +80,7 @@ func initoption(fileName string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	encoder := json.NewEncoder(f)
-	encoder.SetIndent("", "  ")
+	encoder := yaml.NewEncoder(f)
 	if err := encoder.Encode(conf); err != nil {
 		log.Fatal(err)
 	}
