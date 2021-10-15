@@ -80,6 +80,7 @@ func initoption(fileName string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	conf.Etc = make([]string, 0)
 	encoder := yaml.NewEncoder(f)
 	if err := encoder.Encode(conf); err != nil {
 		log.Fatal(err)
