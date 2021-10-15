@@ -7,4 +7,5 @@ type config struct {
 	GOGC     int                 `json:"gogc" yaml:"gogc"`
 	ToPlugin bool                `json:"to_plugin" yaml:"to_plugin"`
 	Module   bool                `json:"module" yaml:"module"`
+	Etc      []string            `json:"etc" yaml:"etc"`
 }
