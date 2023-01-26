@@ -15,7 +15,6 @@ func main() {
 	flag.Parse()
 
 	if *init != "" {
-		*init = fmt.Sprintf("%s.json", *init)
 		initoption(*init)
 		return
 	}

@@ -45,13 +45,6 @@ func initoption(fileName string) {
 			},
 		},
 		{
-			Name: "AutoRun",
-			Prompt: &survey.Confirm{
-				Message: "do you want to run app after compile? ",
-				Default: false,
-			},
-		},
-		{
 			Name: "ToPlugin",
 			Prompt: &survey.Confirm{
 				Message: "do you want to compile to plugin? ",
