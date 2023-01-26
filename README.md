@@ -1,45 +1,43 @@
-# lisb
+# lis
 
-lisb는 빌드 옵션을 다루는 간단한 툴입니다.
+lis는 빌드 옵션을 다루는 간단한 툴입니다.
 
 ## install
 
-먼저 Release에서 각 환경에 맞는 바이너리를 받아서 실행 권한을 주고 환경 변수 상 실행 가능한 경로에 저장합니다.  
-가급적이면 저장하면서 파일 이름을 `lis`만 남기기 바랍니다.
+고의 install 명령어를 통해 자동으로 설치합니다.
+
+`go install github.com/snowmerak/lis@latest`
 
 ## setting
 
 ### init
 
 자신이 작업하는 go 작업 폴더에 가서 `lis -init demo`을 실행합니다.  
-각 질문에 성심성의껏 응답하면 해당 폴더에 `demo.json` 파일이 생성될 것입니다.
+이 때, `build`를 선택하면 빌드를 위한 config 파일이 생기고, `test`나 `bench`를 선택하면 테스트를 위한 config 파일이 생깁니다.  
+이 단계에서는 `build`를 선택했다고 가정합니다.  
+각 질문에 입력한 대로 해당 폴더에 `demo.yaml` 파일이 생성될 것입니다.
 
 각 질문에 세세한 설정이 불가능한 항목이 있을 수 있습니다, gogc가 그렇습니다.  
-이런 경우엔 `demo.json`을 열어서 직접 세세하게 조정할 수 있습니다.
+이런 경우엔 `demo.yaml`을 열어서 직접 세세하게 조정할 수 있습니다.
 
-```json
-{
-  "bin_path": "bin",
-  "name": "lis",
-  "target": {
-    "darwin": [
-      "amd64"
-    ],
-    "linux": [
-      "amd64",
-      "386"
-    ],
-    "windows": [
-      "amd64",
-      "386"
-    ]
-  },
-  "gogc": 0,
-  "to_plugin": false,
-  "auto_run": false,
-  "module": true
-}
-
+```yaml
+bin_path: bin
+name: demo
+target:
+  darwin:
+  - amd64
+  - arm64
+  linux:
+  - amd64
+  - "386"
+  - arm64
+  windows:
+  - amd64
+  - "386"
+gogc: 150
+to_plugin: false
+module: true
+etc: []
 ```
 
 ### target
@@ -93,11 +91,6 @@ windows	amd64
 
 맵을 보시면 아시겠지만 `$GOOS`에 `$GOARCH`을 넣는 방식으로 작성하시면 됩니다.  
 
-### auto_run
-
-`AutoRun` 옵션의 경우엔 `target` 항목에서 본인의 환경에 대한 빌드가 선행되어야합니다.  
-지금 빌드하는 환경의 빌드 옵션이 꺼져 있다면 실행할 수 없으므로 에러가 발생합니다.
-
 ### module
 
 `Module` 옵션은 `go111module`의 on, off를 결정합니다.  
@@ -114,12 +107,27 @@ true라면 on이고 false라면 off로 동작하게 됩니다.
 
 ## compile
 
-컴파일은 `lis -make demo`를 입력하면 지정한 옵션대로 컴파일 됩니다.
+컴파일은 `lis -build demo`를 입력하면 지정한 옵션대로 컴파일 됩니다.
+
+## test & benchmark
+
+가장 위의 `init` 단계에서 `test`나 `bench`를 선택했다면, 다음과 같은 yaml 파일이 생성됩니다.
+
+```yaml
+targets: []
+flags: []
+```
+
+`targets`는 테스트할 대상을 지정하고, `flags`는 테스트할 때 사용할 플래그를 지정합니다.
+
+`targets`는 `target` 구조체의 리스트로 이루어집니다.
+- `package`는 테스트할 패키지를 지정합니다. 메인 패키지로부터의 상대 경로를 입력하면 됩니다.
+- `test` 혹은 `bench`는 문자열 리스트로 테스트 혹은 벤치마크할 함수들을 작성합니다.
+- 양쪽 다 init 할 때 질문에 대한 응답으로 입력할 수 있습니다.
+
+- `lis -test demo`를 입력하면 지정한 옵션대로 테스트를 실행합니다.
+- `lis -bench demo`를 입력하면 지정한 옵션대로 벤치마크를 실행합니다.
 
 ## License
 
 MPL
-
-## import
-
-import : https://github.com/AlecAivazis/survey
