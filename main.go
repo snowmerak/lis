@@ -13,21 +13,21 @@ func main() {
 	flag.Parse()
 
 	if initFile != nil && *initFile != "" {
-		if !strings.HasSuffix(*initFile, ".yaml") || !strings.HasSuffix(*initFile, ".yml") {
+		if !strings.HasSuffix(*initFile, ".yaml") && !strings.HasSuffix(*initFile, ".yml") {
 			*initFile += ".yaml"
 		}
 		initTemplate(*initFile)
 	}
 
 	if testFile != nil && *testFile != "" {
-		if !strings.HasSuffix(*testFile, ".yaml") || !strings.HasSuffix(*testFile, ".yml") {
+		if !strings.HasSuffix(*testFile, ".yaml") && !strings.HasSuffix(*testFile, ".yml") {
 			*testFile += ".yaml"
 		}
 		testWith(*testFile)
 	}
 
 	if benchFile != nil && *benchFile != "" {
-		if !strings.HasSuffix(*benchFile, ".yaml") || !strings.HasSuffix(*benchFile, ".yml") {
+		if !strings.HasSuffix(*benchFile, ".yaml") && !strings.HasSuffix(*benchFile, ".yml") {
 			*benchFile += ".yaml"
 		}
 		benchWith(*benchFile)

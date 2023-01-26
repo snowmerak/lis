@@ -16,14 +16,14 @@ func initTemplate(fileName string) {
 		BENCH = "bench"
 	)
 
-	if !strings.HasSuffix(fileName, ".yaml") || !strings.HasSuffix(fileName, ".yml") {
+	if !strings.HasSuffix(fileName, ".yaml") && !strings.HasSuffix(fileName, ".yml") {
 		fileName += ".yaml"
 	}
 
 	target := ""
 	if err := survey.AskOne(&survey.Select{
 		Message: "choose init type: ",
-		Options: []string{BUILD, TEST},
+		Options: []string{BUILD, TEST, BENCH},
 	}, &target, survey.WithValidator(survey.Required)); err != nil {
 		log.Fatal(err)
 	}
@@ -95,7 +95,6 @@ func initBuild(fileName string) {
 		log.Fatal(err)
 	}
 	conf.GOGC *= 50
-	fileName += ".yaml"
 	if _, err := os.Stat(fileName); !os.IsNotExist(err) {
 		if err := os.Remove(fileName); err != nil {
 			log.Fatal(err)
