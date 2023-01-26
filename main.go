@@ -2,32 +2,41 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"runtime"
+	"strings"
 )
 
 func main() {
-	runtime.GOMAXPROCS(runtime.NumCPU())
-	ballast := make([]byte, 2<<10)
-
-	init := flag.String("init", "", "init [build option name]: create [build option name].json")
-	name := flag.String("make", "", "make [build option name]: compile with info of [build option name].json")
+	initFile := flag.String("init", "", "initialize build or test file  {{file_name}}.yaml")
+	testFile := flag.String("test", "", "run test file {{file_name}}.yaml")
+	benchFile := flag.String("bench", "", "run bench file {{file_name}}.yaml")
+	makeFile := flag.String("build", "", "build project with {{file_name}}.yaml")
 	flag.Parse()
 
-	if *init != "" {
-		initoption(*init)
-		return
+	if initFile != nil && *initFile != "" {
+		if !strings.HasSuffix(*initFile, ".yaml") || !strings.HasSuffix(*initFile, ".yml") {
+			*initFile += ".yaml"
+		}
+		initTemplate(*initFile)
 	}
 
-	if *name == "" {
-		fmt.Println("build option file name is not space")
-		return
-	}
-	conf := load(*name)
-
-	if err := buildAll(conf); err != nil {
-		fmt.Println(err)
+	if testFile != nil && *testFile != "" {
+		if !strings.HasSuffix(*testFile, ".yaml") || !strings.HasSuffix(*testFile, ".yml") {
+			*testFile += ".yaml"
+		}
+		testWith(*testFile)
 	}
 
-	_ = ballast
+	if benchFile != nil && *benchFile != "" {
+		if !strings.HasSuffix(*benchFile, ".yaml") || !strings.HasSuffix(*benchFile, ".yml") {
+			*benchFile += ".yaml"
+		}
+		benchWith(*benchFile)
+	}
+
+	if makeFile != nil && *makeFile != "" {
+		if !strings.HasSuffix(*makeFile, ".yaml") || !strings.HasSuffix(*makeFile, ".yml") {
+			*makeFile += ".yaml"
+		}
+		buildWith(*makeFile)
+	}
 }

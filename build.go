@@ -3,11 +3,38 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
+	"os"
 	"os/exec"
 	"path/filepath"
+
+	"gopkg.in/yaml.v2"
 )
 
-func buildAll(conf *config) error {
+func buildWith(fileName string) {
+	f, err := os.Open(fileName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	conf := &BuildConfig{}
+	decoder := yaml.NewDecoder(f)
+	if err := decoder.Decode(conf); err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := os.Stat(conf.BinPath); os.IsNotExist(err) {
+		if err := os.Mkdir(conf.BinPath, 0770); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if err := buildAll(conf); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func buildAll(conf *BuildConfig) error {
 	errChan := make(chan error)
 	max := 0
 	gogc := fmt.Sprintf("GOGC=%d", conf.GOGC)
